@@ -1,13 +1,16 @@
+# Cell 1
 # Load Pyspark and data
 import pyspark.pandas as ps
 df = ps.read_csv("/databricks-datasets/COVID/covid-19-data")
 display(df)
 
+# Cell 2
 # Convert field to date and integer fields
 df["date"] = ps.to_datetime(df['date'], errors='coerce')
 df["cases"] = df["cases"].astype(int)
 display(df)
 
+# Cell 3
 # Call AutoML via code to train forecast models
 import databricks.automl
 import logging
@@ -15,10 +18,12 @@ import logging
 logging.getLogger("py4j").setLevel(logging.WARNING)
 summary = databricks.automl.forecast(df, target_col="cases", time_col="date", horizon=30, frequency="d",  primary_metric="mdape", output_database="default")
 
+# Cell 4
 # Load the saved predictions.
 forecast_pd = spark.table(summary.output_table_name)
 display(forecast_pd)
 
+# Cell 5
 # Load the best model 
 import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
@@ -27,13 +32,16 @@ trial_id = summary.best_trial.mlflow_run_id
 model_uri = "runs:/{run_id}/model".format(run_id=trial_id)
 pyfunc_model = mlflow.pyfunc.load_model(model_uri)
 
+# Cell 6
 # Generate predictions
 forecasts = pyfunc_model._model_impl.python_model.predict_timeseries(include_history=False)
 display(forecasts)
 
+# Cell 7
 # Aggregate data
 df_true = df.groupby("date").agg(y=("cases", "avg")).reset_index().to_pandas()
 
+# Cell 8
 # Plot forecast
 import matplotlib.pyplot as plt
 fig = plt.figure(facecolor='w', figsize=(10, 6))
