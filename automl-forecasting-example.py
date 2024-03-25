@@ -13,7 +13,7 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## COVID-19 dataset
+# MAGIC ## COVID-19 dataset example
 # MAGIC The dataset contains records for the number of cases of the COVID-19 virus by date in the US, with additional geographical information. The goal is to forecast how many cases of the virus will occur over the next 30 days in the US.
 
 # COMMAND ----------
