@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %pip install "mlflow-skinny[databricks]>=2.4.1"
+# MAGIC dbutils.library.restartPython()
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC # AutoML forecasting example
 # MAGIC ## Requirements
@@ -79,17 +84,12 @@ display(forecast_pd)
 
 # COMMAND ----------
 
-# MAGIC %pip install "mlflow-skinny[databricks]>=2.4.1"
-# MAGIC dbutils.library.restartPython()
-
-# COMMAND ----------
-
 import mlflow
 catalog = "psalm"
-schema = "hls-readmission"
-model_name = "covid-forecast"
+schema = "healthcare"
+model_name = "covid"
 mlflow.set_registry_uri("databricks-uc")
-mlflow.register_model("runs:/fa9d3c7248a0435094ed6cd181a71506/model", f"{catalog}.{schema}.{model_name}")
+mlflow.register_model("runs:/6876bd81a5aa4099b69aad548f247b35/model", f"{catalog}.{schema}.{model_name}")
 
 # COMMAND ----------
 
@@ -107,8 +107,8 @@ import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
 
 run_id = MlflowClient()
-#trial_id = summary.best_trial.mlflow_run_id
-trial_id = "fa9d3c7248a0435094ed6cd181a71506"
+trial_id = summary.best_trial.mlflow_run_id
+trial_id = "6876bd81a5aa4099b69aad548f247b35"
 model_uri = "runs:/{run_id}/model".format(run_id=trial_id)
 pyfunc_model = mlflow.pyfunc.load_model(model_uri)
 
@@ -121,11 +121,11 @@ pyfunc_model = mlflow.pyfunc.load_model(model_uri)
 
 # COMMAND ----------
 
-# forecasts = pyfunc_model._model_impl.python_model.predict_timeseries()
+forecasts = pyfunc_model._model_impl.python_model.predict_timeseries()
 
 
 # Option for Databricks Runtime for Machine Learning 10.5 or above
-forecasts = pyfunc_model._model_impl.python_model.predict_timeseries(df[0], include_history=False)
+#forecasts = pyfunc_model._model_impl.python_model.predict_timeseries(df[0], include_history=False)
 display(forecasts)
 
 # COMMAND ----------
